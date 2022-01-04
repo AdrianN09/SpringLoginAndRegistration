@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AppUserService implements UserDetailsService {
 
-    private final static String USER_NOT_FOUND = "user with email %email not found";
+    private final static String USER_NOT_FOUND = "user with email %s not found";
 
     private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
