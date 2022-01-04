@@ -6,7 +6,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import pl.nieckarz.springsecurityproject.registration.token.ConfirmationToken;
+import pl.nieckarz.springsecurityproject.registration.token.ConfirmationTokenService;
 
+import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
@@ -16,6 +19,7 @@ public class AppUserService implements UserDetailsService {
 
     private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ConfirmationTokenService confirmationTokenService;
 
     @Override
     public UserDetails loadUserByUsername(String email)
@@ -38,7 +42,25 @@ public class AppUserService implements UserDetailsService {
 
         appUserRepository.save(appUser);
 
-        // TODO: SEND confirmation token
-        return "it works";
+        String token = java.util.UUID.randomUUID().toString();
+
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                appUser
+        );
+
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        // TODO: SEND EMAIL
+        return token;
+    }
+
+    public void enableAppUser(String email) {
+        AppUser enabledUser = appUserRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND, email)));
+        enabledUser.setEnabled(true);
+        appUserRepository.save(enabledUser);
     }
 }
