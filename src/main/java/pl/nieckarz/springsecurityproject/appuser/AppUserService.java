@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.nieckarz.springsecurityproject.registration.token.ConfirmationToken;
 import pl.nieckarz.springsecurityproject.registration.token.ConfirmationTokenService;
 
@@ -28,6 +29,7 @@ public class AppUserService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND, email)));
     }
 
+    @Transactional
     public String signUpUser(AppUser appUser) {
 
         boolean userExist = appUserRepository.findByEmail(appUser.getEmail()).isPresent();
@@ -53,7 +55,6 @@ public class AppUserService implements UserDetailsService {
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-        // TODO: SEND EMAIL
         return token;
     }
 

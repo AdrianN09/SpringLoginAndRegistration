@@ -2,6 +2,7 @@ package pl.nieckarz.springsecurityproject.registration;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.nieckarz.springsecurityproject.appuser.AppUser;
 import pl.nieckarz.springsecurityproject.appuser.AppUserRole;
 import pl.nieckarz.springsecurityproject.appuser.AppUserService;
@@ -17,6 +18,7 @@ public class RegistrationService {
     private final AppUserService appUserService;
     private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
+
 
     public String register(RegistrationRequest request) {
 
@@ -38,6 +40,7 @@ public class RegistrationService {
         );
     }
 
+    @Transactional
     public String confirmToken(String token){
         ConfirmationToken confirmationToken = confirmationTokenService.getToken(token)
                 .orElseThrow(()-> new IllegalStateException("token not found"));
